@@ -1,38 +1,45 @@
 <template>
     <div class="sign-up">
+        <img alt="oh no.." src="./assets/logoG.png">
         <p>Join the club!</p>
-        <input type="text" placeholder="Username"><br>
-        <input type="password" placeholder="Password"><br>
+        <input type="text" placeholder="Username" v-model= "email"><br>
+        <input type="password" placeholder="Password" v-model= "password"><br>
         <button @click="signUp">Sign Up</button>
-        <span>or go </span><router-link to="/login">back.</router-link>
+        <span>or go </span><router-link to="/">back</router-link>
     </div>
 </template>
 
 <script>
-import firebase from 'firebase';
-//import func from '../vue-temp/vue-editor-bridge';
+
+import {frbase} from "../setupMyFirebase.js"
+
 
 export default {
-    name: 'signUp',
-    data(){
-        return {
-            email: '',
-            password: ''
-        }
-    },
-    methods: {
-        signUp: function() {
-            firebase.auth().createUserWithEmailAndPassword(this.email, this.password).then(
-                function (user){
-                    alert('Your account has been created!')
-                },
-                function (err){
-                    alert('Yikes.. ' + err.message)
-                }
-            )
-        }
+  name: "signUp",
+  data() {
+    return {
+      email: "",
+      password: ""
+    };
+  },
+  methods: {
+    signUp: function() {
+      frbase
+        .auth()
+        .createUserWithEmailAndPassword(this.email, this.password)
+        .then(
+          function(user) {
+            alert("Your account has been created!");
+          },
+          function(err) {
+            alert("Yikes.. " + err.message);
+          }
+        );
     }
-}
+  }
+};
+
+
 </script>
 <style scoped>
   .signUp {

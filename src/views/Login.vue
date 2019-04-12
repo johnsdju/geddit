@@ -1,28 +1,49 @@
 <template>
     <div class="login">
+        <img alt="oh no.." src="./assets/logoG.png">
         <h3>Sign In</h3>
-        <input type="text" placeholder="Username"><br>
-        <input type="password" placeholder="Password"><br>
-        <button>Log in</button>
+        <input type="text" placeholder="Username or Email" v-model = "email"><br>
+        <input type="password" placeholder="Password" v-model = "password"><br>
+        <button v-on:click = "login">Log in</button>
         <p>Don't have an account? Why not </p><router-link to="/sign-up">create one?</router-link>
     </div>
 </template>
 
 <script>
+
+import {frbase} from "../setupMyFirebase.js"
+
 export default {
     name: 'login',
     data(){
-        return {};
+        return {
+            email: '',
+            password: ''
+        };
     },
     methods: {
         login: function() {
-            this.$router.replace('home');
+            frbase.auth().signInWithEmailAndPassword(this.email, this.password).then(
+                function(user){
+                    this.$router.push('/home')
+                    
+                },
+                function(err){
+                    alert('Yikes..' + err.message)
+                }
+            )
+              this.$router.push('/home');
         }
     }
 }
 </script>
 
 <style scoped>
+
+    body{
+        text-align:center;
+    }
+
   .login {
       margin-top: 40px;
   }
@@ -44,4 +65,6 @@ export default {
       text-decoration: underline;
       cursor: pointer;
   }
+
+  
 </style>

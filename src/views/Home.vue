@@ -10,7 +10,7 @@
          <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button>
 
         <b-navbar-nav>
-          <b-nav-item href="#">Home</b-nav-item> -->
+          <b-nav-item href="#">Home</b-nav-item>
           
            <b-nav-item-dropdown text="SubGeddits" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
@@ -23,8 +23,6 @@
             <b-dropdown-item href="#">Account</b-dropdown-item>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
           </b-nav-item-dropdown>
-
-          <button text="Logout" @click="logout" right>Logout</button>
         </b-navbar-nav>
       </b-navbar>
     </div>
@@ -92,8 +90,7 @@
 
 <script>
 import { frbase } from "../setupMyFirebase.js";
-import { functions } from 'firebase';
-var root = frbase.database().ref();
+var root = frbase.database().ref("SubGeddit");
 
 export default {
   name: "home",
@@ -113,17 +110,26 @@ export default {
   methods: {
     
     post() {
-      let findSubGeddit = root.child(this.route + "/");
-      let newThread = findSubGeddit.child(this.postTitle + "/");
-      newThread.push().set(this.postData);
+      
 
-      this.isPostVisible = false;
+
+      let newThread = root.child(this.route)
+      let postUnderNewThread = newThread.child("Posts")
+      let postDetails = postUnderNewThread.child(this.postTitle)
+      postDetails.push().set({Title: this.postTitle})
+      postDetails.push().set({Data: this.postData});
+
+      
+
     },
     createSubGeddit() {
-      let newSubGeddit = root.child(this.newSubGedditTitle + "/");
-      newSubGeddit.push().set(this.newSubGedditDescription + "/");
+        let newSubGeddit = root.child(this.newSubGedditTitle);
+      
+        newSubGeddit.push().set({Title: this.newSubGedditTitle})
+        newSubGeddit.push().set({Description: this.newSubGedditDescription})
 
-      this.isCreateSubGedditVisibile = false;
+
+
     },
     resetFields(){
       route= "",
@@ -131,11 +137,6 @@ export default {
       postData= "",
       newSubGedditTitle= "",
       newSubGedditDescription= ""
-    },
-    logout: function(){
-      frbase.auth().signOut().then(() => {
-        this.$router.replace('login')
-      })
     }
   }
 };

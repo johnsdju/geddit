@@ -23,6 +23,8 @@
             <b-dropdown-item href="#">Account</b-dropdown-item>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
           </b-nav-item-dropdown>
+
+          <button text="Logout" @click="logout" right>Logout</button>
         </b-navbar-nav>
       </b-navbar>
     </div>
@@ -90,6 +92,7 @@
 
 <script>
 import { frbase } from "../setupMyFirebase.js";
+import { functions } from 'firebase';
 var root = frbase.database().ref();
 
 export default {
@@ -128,6 +131,11 @@ export default {
       postData= "",
       newSubGedditTitle= "",
       newSubGedditDescription= ""
+    },
+    logout: function(){
+      frbase.auth().signOut().then(() => {
+        this.$router.replace('login')
+      })
     }
   }
 };

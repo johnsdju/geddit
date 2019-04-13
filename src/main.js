@@ -6,16 +6,25 @@ import store from './store'
 import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import {frbase} from "./setupMyFirebase.js"
 
 
 Vue.config.productionTip = false
+let app = '';
+frbase.auth().onAuthStateChanged(() => {
+  if (!app) {
+    app = new Vue({
+      router,
+      render: h => h(App)
+    }).$mount('#app')
+  }
+})
 
 
-
-new Vue({
-  router,
-  store,
-  render: function (h) { return h(App) }
-}).$mount('#app')
+// new Vue({
+//   router,
+//   store,
+//   render: function (h) { return h(App) }
+// }).$mount('#app')
 
 Vue.use(BootstrapVue)

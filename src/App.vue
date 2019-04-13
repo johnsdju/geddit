@@ -1,3 +1,4 @@
+    
 <template>
   <div id="app">
     <router-view/>
@@ -27,3 +28,4 @@
   color: #42b983;
 }
 </style>
+

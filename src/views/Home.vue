@@ -1,24 +1,18 @@
 <template>
   <div class="post">
-    <!-- <div id="post-image">
-      <img alt="oh no.." src="./assets/logoG.png" width="50" height="50">
-      <h2 id="mainHeader">Geddit: Aquire the Sauce</h2>
-    </div>
-    <div id="post-form">
-      <button id="post" v-on:click="post">Post</button>
-    </div>-->
 
     <!-- Nav bar -->
     <!-- ------- -->
     <div>
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
-        <b-button id="postButton" v-b-modal.modal-1>Add Post</b-button>
+        <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
+         <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button>
+
         <b-navbar-nav>
           <b-nav-item href="#">Home</b-nav-item> -->
-
-         
-           <b-nav-item-dropdown text="Lang" right>
+          
+           <b-nav-item-dropdown text="SubGeddits" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
             <b-dropdown-item href="#">ES</b-dropdown-item>
             <b-dropdown-item href="#">RU</b-dropdown-item>
@@ -38,23 +32,51 @@
     <!-- ------------- -->
     <div>
       <!-- Modal Component -->
-      <b-modal id="modal-1" title="BootstrapVue">
+      <b-modal id="modal-post" title="Post to SubGeddit" @ok="post" @show="resetFields">
         <div class="modal-body">
-          <div class="form-subGeddit">
-            <label for="subGeddit">SubGeddit</label>
-            <input type="text" class="form-subGeddit" id="subGeddit" placeholder>
-          </div>
-          <div class="form-title">
-            <label for="inputTitle">Title</label>
-            <input type="text" class="form-title" id="inputTitle">
-          </div>
-          <div class="form-description">
-            <label for="descritption">Description</label>
-            <input type="text" class="form-description" id="description">
-          </div>
+          <b-form>
+
+            <b-form-group id="SubGeddit" label = "Where do you want to post" label-for="subGeddit-input">
+              <b-form-input id="subGeddit-input" v-model="route"></b-form-input>
+            </b-form-group>
+
+            <b-form-group id="Title" label = "Title your post" label-for="subGeddit-title">
+              <b-form-input id="subGeddit-title" v-model="postTitle"></b-form-input>
+            </b-form-group>
+
+            <b-form-group id="Content" label = "What do you want to post" label-for="subGeddit-content">
+              <b-form-textarea id="subGeddit-content" v-model="postData" rows ="3" max-rows="6"></b-form-textarea>
+            </b-form-group>
+
+          </b-form>
         </div>
       </b-modal>
     </div>
+    
+
+    <!--Modal Create SubGeddit-->
+    <!-- -------------------- -->
+    <div>
+      <!-- Modal Component -->
+      <b-modal id="modal-create" title="Create a SubGeddit" @ok="createSubGeddit" @show="resetFields">
+        <div class="modal-body">
+          <b-form>
+
+            <b-form-group id="SubGeddit-name" label = "Name your SubGeddit" label-for="subGeddit-name-input">
+              <b-form-input id="subGeddit-name-input" v-model="newSubGedditTitle"></b-form-input>
+            </b-form-group>
+
+            <b-form-group id="SubGeddit-Des" label = "Tell us about your new SubGeddit" label-for="subGeddit-des-input">
+              <b-form-textarea id="subGeddit-des-input" v-model="newSubGedditDescription" rows="2" max-rows="2"></b-form-textarea>
+            </b-form-group>
+
+          </b-form>
+        </div>
+      </b-modal>
+    </div>
+
+
+
 
     <!-- Start Posts -->
     <!-- ----------- -->
@@ -78,37 +100,34 @@ export default {
       route: "",
       postTitle: "",
       postData: "",
-      isPostVisible: false,
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
       newSubGedditDescription: "",
-      isCreateSubGedditVisibile: false
     };
   },
   components: {},
   methods: {
-    /*Needs to go in to a post thread component*/
-    showPost() {
-      this.isPostVisible = !this.isPostVisible;
-    },
+    
     post() {
-      let newSubGeddit = root.child(this.route + "/");
-      let newThread = newSubGeddit.child(this.postTitle + "/");
+      let findSubGeddit = root.child(this.route + "/");
+      let newThread = findSubGeddit.child(this.postTitle + "/");
       newThread.push().set(this.postData);
 
       this.isPostVisible = false;
-    },
-
-    /*Needs to go in to a create sub geddit component*/
-    showCreateSubGeddit() {
-      this.isCreateSubGedditVisibile = !this.isCreateSubGedditVisibile;
     },
     createSubGeddit() {
       let newSubGeddit = root.child(this.newSubGedditTitle + "/");
       newSubGeddit.push().set(this.newSubGedditDescription + "/");
 
       this.isCreateSubGedditVisibile = false;
+    },
+    resetFields(){
+      route= "",
+      postTitle= "",
+      postData= "",
+      newSubGedditTitle= "",
+      newSubGedditDescription= ""
     }
   }
 };

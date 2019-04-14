@@ -9,8 +9,7 @@
         <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button>
 
         <b-navbar-nav>
-          <b-nav-item href="#">Home</b-nav-item>
--->
+          <b-nav-item href="#">Home</b-nav-item>-->
           <b-nav-item-dropdown text="SubGeddits" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
             <b-dropdown-item href="#">ES</b-dropdown-item>
@@ -97,14 +96,13 @@
 
     <!-- Start Posts -->
     <!-- ----------- -->
-    <!-- <div id="showPosts">
+    <div id="showPosts">
       <div class="text-center">
         <div>
-          <b-table id="mainTable" hover :items="postData"></b-table>
+          <b-table id="mainTable" hover :items="postDataTable"></b-table>
         </div>
-        <b-spinner id="loadingAni" label="Loading..."></b-spinner>
       </div>
-    </div> -->
+    </div>
   </div>
 </template>
 
@@ -126,29 +124,24 @@ export default {
       /*Needs to go in to a post thread component*/
       route: "",
       postTitle: "",
-      postData: [],
+      postData: "",
+      postDataTable: [],
       postObj: {},
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
-      newSubGedditDescription: "",
-//       root: root.on("child_added", snapshot => {
-//   console.log(snapshot.val());
-//   app.createTable(snapshot);
-// }),
+      newSubGedditDescription: ""
+      //       root: root.on("child_added", snapshot => {
+      //   console.log(snapshot.val());
+      //   app.createTable(snapshot);
+      // }),
     };
   },
-  firebase: {
-    root: root
-  },
+  // firebase: {
+  //   root: root
+  // },
   components: {},
   methods: {
-    mounted(){
-      let test = root.on("child_added", snapshot => {
-        console.log(snapshot.val());
-        
-      });
-    },
     addPost() {
       // let newThread = root.child(this.route)
       // let postUnderNewThread = newThread.child("Posts")
@@ -159,6 +152,10 @@ export default {
       const newPost = root.push();
       const data = { title: this.postTitle, content: this.postData };
       newPost.set(data);
+
+      // Debugging
+      // this.postDataTable.push(data);
+      // console.log(this.postDataTable);
     },
     createSubGeddit() {
       let newSubGeddit = root.child(this.newSubGedditTitle);
@@ -184,17 +181,21 @@ export default {
           console.log(err);
         });
     },
-    // createTable(snapshot) {
-    //   const items = snapshot.val();
-    //   this.postData.push(items);
-    //   console.log(this.postData);
-      
-    // }
+
+    createTable(snapshot) {
+      const items = snapshot.val();
+      this.postDataTable.push(items);
+      console.log(this.postDataTable);
+    }
+  },
+  created: function() {
+    root.on("child_added", snapshot => {
+      console.log(snapshot.val());
+      this.createTable(snapshot);
+    });
+    //this.$refs.loadingAni = false;
   }
 };
-
-
-
 </script>
 
 <style>
@@ -244,4 +245,9 @@ export default {
   width: 3rem;
   height: 3rem;
 }
+
+#mainTable {
+  margin-top: 20px;
+}
+
 </style>

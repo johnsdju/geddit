@@ -1,18 +1,16 @@
 <template>
   <div class="post">
-
     <!-- Nav bar -->
     <!-- ------- -->
     <div>
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
         <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
-         <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button>
+        <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button>
 
         <b-navbar-nav>
-          <b-nav-item href="#">Home</b-nav-item>
-          
-           <b-nav-item-dropdown text="SubGeddits" right>
+          <b-nav-item href="#">Home</b-nav-item>-->
+          <b-nav-item-dropdown text="SubGeddits" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
             <b-dropdown-item href="#">ES</b-dropdown-item>
             <b-dropdown-item href="#">RU</b-dropdown-item>
@@ -22,67 +20,88 @@
           <b-nav-item-dropdown text="User" right>
             <b-dropdown-item href="#">Account</b-dropdown-item>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
+            <b-dropdown-item @click="logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>
         </b-navbar-nav>
       </b-navbar>
     </div>
 
-   
     <!-- Modal Add Post-->
     <!-- ------------- -->
     <div>
       <!-- Modal Component -->
-      <b-modal id="modal-post" title="Post to SubGeddit" @ok="post" @show="resetFields">
+      <b-modal id="modal-post" title="Post to SubGeddit" @ok="addPost" @show="resetFields">
         <div class="modal-body">
           <b-form>
-
-            <b-form-group id="SubGeddit" label = "Where do you want to post" label-for="subGeddit-input">
+            <b-form-group
+              id="SubGeddit"
+              label="Where do you want to post"
+              label-for="subGeddit-input"
+            >
               <b-form-input id="subGeddit-input" v-model="route"></b-form-input>
             </b-form-group>
 
-            <b-form-group id="Title" label = "Title your post" label-for="subGeddit-title">
+            <b-form-group id="Title" label="Title your post" label-for="subGeddit-title">
               <b-form-input id="subGeddit-title" v-model="postTitle"></b-form-input>
             </b-form-group>
 
-            <b-form-group id="Content" label = "What do you want to post" label-for="subGeddit-content">
-              <b-form-textarea id="subGeddit-content" v-model="postData" rows ="3" max-rows="6"></b-form-textarea>
+            <b-form-group
+              id="Content"
+              label="What do you want to post"
+              label-for="subGeddit-content"
+            >
+              <b-form-textarea id="subGeddit-content" v-model="postData" rows="3" max-rows="6"></b-form-textarea>
             </b-form-group>
-
           </b-form>
         </div>
       </b-modal>
     </div>
-    
 
     <!--Modal Create SubGeddit-->
     <!-- -------------------- -->
     <div>
       <!-- Modal Component -->
-      <b-modal id="modal-create" title="Create a SubGeddit" @ok="createSubGeddit" @show="resetFields">
+      <b-modal
+        id="modal-create"
+        title="Create a SubGeddit"
+        @ok="createSubGeddit"
+        @show="resetFields"
+      >
         <div class="modal-body">
           <b-form>
-
-            <b-form-group id="SubGeddit-name" label = "Name your SubGeddit" label-for="subGeddit-name-input">
+            <b-form-group
+              id="SubGeddit-name"
+              label="Name your SubGeddit"
+              label-for="subGeddit-name-input"
+            >
               <b-form-input id="subGeddit-name-input" v-model="newSubGedditTitle"></b-form-input>
             </b-form-group>
 
-            <b-form-group id="SubGeddit-Des" label = "Tell us about your new SubGeddit" label-for="subGeddit-des-input">
-              <b-form-textarea id="subGeddit-des-input" v-model="newSubGedditDescription" rows="2" max-rows="2"></b-form-textarea>
+            <b-form-group
+              id="SubGeddit-Des"
+              label="Tell us about your new SubGeddit"
+              label-for="subGeddit-des-input"
+            >
+              <b-form-textarea
+                id="subGeddit-des-input"
+                v-model="newSubGedditDescription"
+                rows="2"
+                max-rows="2"
+              ></b-form-textarea>
             </b-form-group>
-
           </b-form>
         </div>
       </b-modal>
     </div>
 
-
-
-
     <!-- Start Posts -->
     <!-- ----------- -->
     <div id="showPosts">
       <div class="text-center">
-        <b-spinner id="loadingAni" label="Loading..."></b-spinner>
+        <div>
+          <b-table id="mainTable" hover :items="postDataTable"></b-table>
+        </div>
+        <b-spinner id="loadingAni" ref="loadingAni" label="Loading..."></b-spinner>
       </div>
     </div>
   </div>
@@ -90,7 +109,14 @@
 
 <script>
 import { frbase } from "../setupMyFirebase.js";
-var root = frbase.database().ref("SubGeddit");
+import app from "../main.js";
+
+var root = frbase.database().ref("Posts");
+
+// root.on("child_added", snapshot => {
+//   console.log(snapshot.val());
+//   app.createTable(snapshot);
+// });
 
 export default {
   name: "home",
@@ -100,44 +126,75 @@ export default {
       route: "",
       postTitle: "",
       postData: "",
+      postDataTable: [],
+      postObj: {},
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
-      newSubGedditDescription: "",
+      newSubGedditDescription: ""
+      //       root: root.on("child_added", snapshot => {
+      //   console.log(snapshot.val());
+      //   app.createTable(snapshot);
+      // }),
     };
   },
+  // firebase: {
+  //   root: root
+  // },
   components: {},
   methods: {
-    
-    post() {
-      
+    addPost() {
+      // let newThread = root.child(this.route)
+      // let postUnderNewThread = newThread.child("Posts")
+      // let postDetails = postUnderNewThread.child(this.postTitle)
+      // postDetails.push().set({Title: this.postTitle})
+      // postDetails.push().set({Data: this.postData});
 
+      const newPost = root.push();
+      const data = { title: this.postTitle, content: this.postData };
+      newPost.set(data);
 
-      let newThread = root.child(this.route)
-      let postUnderNewThread = newThread.child("Posts")
-      let postDetails = postUnderNewThread.child(this.postTitle)
-      postDetails.push().set({Title: this.postTitle})
-      postDetails.push().set({Data: this.postData});
-
-      
-
+      // Debugging
+      // this.postDataTable.push(data);
+      // console.log(this.postDataTable);
     },
     createSubGeddit() {
-        let newSubGeddit = root.child(this.newSubGedditTitle);
-      
-        newSubGeddit.push().set({Title: this.newSubGedditTitle})
-        newSubGeddit.push().set({Description: this.newSubGedditDescription})
+      let newSubGeddit = root.child(this.newSubGedditTitle);
 
-
-
+      newSubGeddit.push().set({ Title: this.newSubGedditTitle });
+      newSubGeddit.push().set({ Description: this.newSubGedditDescription });
     },
-    resetFields(){
-      route= "",
-      postTitle= "",
-      postData= "",
-      newSubGedditTitle= "",
-      newSubGedditDescription= ""
+    resetFields() {
+      (route = ""),
+        (postTitle = ""),
+        (postData = ""),
+        (newSubGedditTitle = ""),
+        (newSubGedditDescription = "");
+    },
+    logout() {
+      frbase.auth
+        .signOut()
+        .then(() => {
+          this.$store.dispatch("clearData");
+          this.$router.push("/");
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    },
+
+    createTable(snapshot) {
+      const items = snapshot.val();
+      this.postDataTable.push(items);
+      console.log(this.postDataTable);
     }
+  },
+  created: function() {
+    root.on("child_added", snapshot => {
+      console.log(snapshot.val());
+      this.createTable(snapshot);
+    });
+    this.$refs.loadingAni.set
   }
 };
 </script>
@@ -188,5 +245,9 @@ export default {
   margin-top: 200px;
   width: 3rem;
   height: 3rem;
+}
+
+#mainTable {
+  margin-top: 20px;
 }
 </style>

@@ -101,7 +101,6 @@
         <div>
           <b-table id="mainTable" hover :items="postDataTable"></b-table>
         </div>
-        <b-spinner id="loadingAni" ref="loadingAni" label="Loading..."></b-spinner>
       </div>
     </div>
   </div>
@@ -194,7 +193,7 @@ export default {
       console.log(snapshot.val());
       this.createTable(snapshot);
     });
-    this.$refs.loadingAni.set
+    //this.$refs.loadingAni = false;
   }
 };
 </script>
@@ -250,4 +249,5 @@ export default {
 #mainTable {
   margin-top: 20px;
 }
+
 </style>

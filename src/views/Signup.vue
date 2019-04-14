@@ -4,7 +4,7 @@
         <p>Join the club!</p>
         <input type="text" placeholder="Username" v-model= "email"><br>
         <input type="password" placeholder="Password" v-model= "password"><br>
-        <button @click="signUp">Sign Up</button>
+        <b-button @click="signUp">Sign Up</b-button>
         <span>or go </span><router-link to="/">back</router-link>
     </div>
 </template>

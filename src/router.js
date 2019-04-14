@@ -28,6 +28,11 @@ const router = new Router({
       name: 'Login',
       component: Login  
     },
+    // {
+    //   path: '/' ,//+ userdata,
+    //   name: 'Account',
+    //   component: Account
+    // },
     {
       path: '/sign-up',
       name: 'Signup',

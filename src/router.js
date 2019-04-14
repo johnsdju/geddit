@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import Signup from './views/Signup.vue'
+import Account from './views/Account.vue'
 import {frbase} from "./setupMyFirebase.js"
 
 Vue.use(Router)
@@ -28,15 +29,18 @@ const router = new Router({
       name: 'Login',
       component: Login  
     },
-    // {
-    //   path: '/' ,//+ userdata,
-    //   name: 'Account',
-    //   component: Account
-    // },
     {
       path: '/sign-up',
       name: 'Signup',
       component: Signup
+    },
+    {
+      path: '/account',
+      name: 'Account',
+      component: Account,
+      meta: {
+        requiresAuth: true
+      }
     }
   ]
 });

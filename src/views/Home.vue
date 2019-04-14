@@ -6,7 +6,7 @@
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
         <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
-        <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button>
+        <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
 
         <b-navbar-nav>
           <b-nav-item href="#">Home</b-nav-item>-->
@@ -18,7 +18,7 @@
           </b-nav-item-dropdown>
 
           <b-nav-item-dropdown text="User" right>
-            <b-dropdown-item href="#">Account</b-dropdown-item>
+            <b-dropdown-item @click="switchtoAccount">Account</b-dropdown-item>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
             <b-dropdown-item @click="logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>
@@ -99,7 +99,7 @@
     <div id="showPosts">
       <div class="text-center">
         <div>
-          <b-table id="mainTable" hover :items="postDataTable"></b-table>
+          <b-table id="mainTable" hover :items="postDataTable" :fields="mainTableFields"></b-table>
         </div>
       </div>
     </div>
@@ -130,32 +130,18 @@ export default {
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
-      newSubGedditDescription: ""
-      //       root: root.on("child_added", snapshot => {
-      //   console.log(snapshot.val());
-      //   app.createTable(snapshot);
-      // }),
+      newSubGedditDescription: "",
+      mainTableFields:{
+
+      }
     };
   },
-  // firebase: {
-  //   root: root
-  // },
   components: {},
   methods: {
     addPost() {
-      // let newThread = root.child(this.route)
-      // let postUnderNewThread = newThread.child("Posts")
-      // let postDetails = postUnderNewThread.child(this.postTitle)
-      // postDetails.push().set({Title: this.postTitle})
-      // postDetails.push().set({Data: this.postData});
-
       const newPost = root.push();
-      const data = { title: this.postTitle, content: this.postData };
+      const data = { votes: 0, title: this.postTitle, user: frbase.auth.currentUser, content: this.postData };
       newPost.set(data);
-
-      // Debugging
-      // this.postDataTable.push(data);
-      // console.log(this.postDataTable);
     },
     createSubGeddit() {
       let newSubGeddit = root.child(this.newSubGedditTitle);
@@ -171,23 +157,23 @@ export default {
         (newSubGedditDescription = "");
     },
     logout() {
-      frbase.auth
+      frbase
+        .auth()
         .signOut()
         .then(() => {
-          this.$store.dispatch("clearData");
-          this.$router.push("/");
-        })
-        .catch(err => {
-          console.log(err);
+          this.$router.replace("login");
         });
     },
-
+    switchtoAccount(){
+      this.$router.replace("account");
+    },
     createTable(snapshot) {
       const items = snapshot.val();
       this.postDataTable.push(items);
       console.log(this.postDataTable);
     }
   },
+  // Created
   created: function() {
     root.on("child_added", snapshot => {
       console.log(snapshot.val());
@@ -249,5 +235,4 @@ export default {
 #mainTable {
   margin-top: 20px;
 }
-
 </style>

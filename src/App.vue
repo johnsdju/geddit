@@ -1,21 +1,13 @@
 <template>
   <div id="app">
-    
     <router-view/>
   </div>
 </template>
 
 <script>
 //This is all for dynamic multiple users (fix l8r)
-  import {mapState} from 'vuex';
-  import Home from './views/Home.vue';
 
-  export default {
-    components: { Home},
-    computed: {
-      ...mapState(['currentUser'])
-    }
-}
+
 </script>
 
 <style>

@@ -28,17 +28,16 @@ export default {
         .auth()
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(
-          function(user) {
+          (user) => {
             alert("Your account has been created!");
           },
-          function(err) {
+          (err) => {
             alert("Yikes.. " + err.message);
           }
         );
     }
   }
 };
-
 
 </script>
 <style scoped>

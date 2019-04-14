@@ -24,16 +24,13 @@ export default {
     methods: {
         login: function() {
             frbase.auth().signInWithEmailAndPassword(this.email, this.password).then(
-                function(user){
-                    this.$router.push('/home')
-                    
+                (user) => { 
+                    this.$router.replace('home')
                 },
-                function(err){
-                    alert('Yikes..' + err.message)
+                (err) => {
+                    alert('Yikes... '+ err.message);
                 }
-            )
-              this.$router.push('/home');
-        }
+            )}
     }
 }
 </script>

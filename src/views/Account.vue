@@ -35,9 +35,7 @@
             <td>{{ post.phone }}</td>
             <td>{{ post.age }}</td>
             <td>{{ post.dob}}</td>
-            <button @click = "getCurrentUser">Test</button>
           </tr>
-          
         </template>
       </table>
     </div>
@@ -66,6 +64,7 @@ export default {
       upvoted: false,
       downvoted: false,
       votes: 0,
+      currentUser: frbase.auth().currentUser.email,
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
@@ -94,24 +93,6 @@ export default {
       newSubGeddit.push().set({ Title: this.newSubGedditTitle });
       newSubGeddit.push().set({ Description: this.newSubGedditDescription });
     },
-    upvote(key, num) {
-      num++; 
-      root
-        .child(key)
-        .child('votes')
-        .set(num);
-        this.upvoted = true;
-        this.downvoted = false;
-    },
-    downvote(key, num) {
-      num--;
-      root
-        .child(key)
-        .child('votes')
-        .set(num);
-        this.upvoted = false;
-        this.downvoted = true;
-    },
     resetFields() {
       (route = ""),
         (postTitle = ""),
@@ -134,19 +115,17 @@ export default {
       this.$router.replace("account");
     },
     createTable(snapshot) {
-      let items = snapshot.val();
-      items.snapKey = snapshot.key;
-      this.postDataTable.push(items);
-      console.log(
-        "This is a the added item: " +
-          items.firstName +
-          items.lastName +
-          items.age +
-          items.dob +
-          items.email +
-          items.phone +
-          items.password
-      );
+      // let items = snapshot.val();
+      // items.snapKey = snapshot.key;
+      // this.postDataTable.push(items);
+
+    let curr = root.child().orderByChild("email").equalTo(this.currentUser).on("child_added",
+              snapshot => {
+                let items = snapshot.val()
+                items.snapKey = snapshot.key
+                this.postDataTable.push(items)
+            })
+
     },
     mainRowClicked(event) {
       alert(event);
@@ -162,8 +141,6 @@ export default {
     root.on("child_changed", snapshot => {
       this.createTable(snapshot);
     });
-  }, getCurrentUser(){
-    alert(frbase.auth().currentUser.email)
   }
 };
 </script>

@@ -69,6 +69,7 @@ export default {
     handler() {
       this.signUp();
       this.createTable();
+      this.$router.replace("home");
     }
   }
 };

@@ -9,7 +9,8 @@
         <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
 
         <b-navbar-nav>
-          <b-nav-item @click="Home">Home</b-nav-item>-->
+          <b-nav-item v-on:click = '$router.push("home")'>Home</b-nav-item>
+          <b-nav-item v-on:click = '$router.push("Account")'>Account</b-nav-item>
           <b-nav-item-dropdown text="SubGeddits" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
             <b-dropdown-item href="#">ES</b-dropdown-item>
@@ -122,20 +123,14 @@
           <th>Time Posted</th>
           <th>Title</th>
         </tr>
-        <!-- For loop to populate data -->
-        <template v-for="post in postDataTable">
-          <tr>
-            <td>{{ post.vote }}</td>
-            <td>{{ post.user }}</td>
-            <td></td>
-            <td>{{ post.title }}</td>
-            <td><b-button @click="removePost"> Delete</b-button></td>
-          </tr>
-        </template>
+        <tr>
+          <!-- For loop to populate data -->
+        </tr>
       </table>
     </div>
   </div>
 </template>
+
 
 
 <script>
@@ -199,18 +194,13 @@ export default {
           this.$router.replace("login");
         });
     },
-    Home (){
-      this.$router.replace("home");
-    },
     switchtoAccount() {
       this.$router.replace("account");
     },
     createTable(snapshot) {
-      let items = snapshot.val();
-      items.snapKey = snapshot.key;
-      console.log("This is a the added item: "+ items.title + items.snapKey + items.content)
+      const items = snapshot.val();
       this.postDataTable.push(items);
-      //console.log(this.postDataTable);
+      console.log(this.postDataTable);
     },
     mainRowClicked(event) {
       alert(event);
@@ -219,7 +209,7 @@ export default {
   // Created
   created: function() {
     root.on("child_added", snapshot => {
-      console.log("the added obj: " +snapshot.val()); 
+      console.log(snapshot.val());
       this.createTable(snapshot);
     });
     //this.$refs.loadingAni = false;

@@ -9,7 +9,7 @@
         <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
 
         <b-navbar-nav>
-          <b-nav-item href="#">Home</b-nav-item>-->
+          <b-nav-item @click="Home">Home</b-nav-item>-->
           <b-nav-item-dropdown text="SubGeddits" right>
             <b-dropdown-item href="#">EN</b-dropdown-item>
             <b-dropdown-item href="#">ES</b-dropdown-item>
@@ -122,14 +122,20 @@
           <th>Time Posted</th>
           <th>Title</th>
         </tr>
-        <tr>
-          <!-- For loop to populate data -->
-        </tr>
+        <!-- For loop to populate data -->
+        <template v-for="post in postDataTable">
+          <tr>
+            <td>{{ post.vote }}</td>
+            <td>{{ post.user }}</td>
+            <td></td>
+            <td>{{ post.title }}</td>
+            <td><b-button @click="removePost"> Delete</b-button></td>
+          </tr>
+        </template>
       </table>
     </div>
   </div>
 </template>
-
 
 
 <script>
@@ -193,13 +199,18 @@ export default {
           this.$router.replace("login");
         });
     },
+    Home (){
+      this.$router.replace("home");
+    },
     switchtoAccount() {
       this.$router.replace("account");
     },
     createTable(snapshot) {
-      const items = snapshot.val();
+      let items = snapshot.val();
+      items.snapKey = snapshot.key;
+      console.log("This is a the added item: "+ items.title + items.snapKey + items.content)
       this.postDataTable.push(items);
-      console.log(this.postDataTable);
+      //console.log(this.postDataTable);
     },
     mainRowClicked(event) {
       alert(event);
@@ -208,7 +219,7 @@ export default {
   // Created
   created: function() {
     root.on("child_added", snapshot => {
-      console.log(snapshot.val());
+      console.log("the added obj: " +snapshot.val()); 
       this.createTable(snapshot);
     });
     //this.$refs.loadingAni = false;

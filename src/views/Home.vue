@@ -170,7 +170,7 @@ export default {
       const data = {
         votes: 0,
         title: this.postTitle,
-        user: frbase.auth.currentUser,
+        user: this.currentUser,
         content: this.postData
       };
       newPost.set(data);

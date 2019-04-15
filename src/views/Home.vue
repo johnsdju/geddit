@@ -17,11 +17,11 @@
             <b-dropdown-item href="#">FA</b-dropdown-item>
           </b-nav-item-dropdown>
 
-          <b-nav-item-dropdown text="User" right>
+          <!-- <b-nav-item-dropdown text="User" right>
             <b-dropdown-item @click="switchtoAccount">Account</b-dropdown-item>
             <b-dropdown-item href="#">Settings</b-dropdown-item>
             <b-dropdown-item @click="logout">Logout</b-dropdown-item>
-          </b-nav-item-dropdown>
+          </b-nav-item-dropdown>-->
         </b-navbar-nav>
       </b-navbar>
     </div>
@@ -96,26 +96,49 @@
 
     <!-- Start Posts -->
     <!-- ----------- -->
-    <div id="showPosts">
+    <!-- <div id="showPosts">
       <div class="text-center">
         <div>
-          <b-table id="mainTable" hover :items="postDataTable" :fields="mainTableFields"></b-table>
+          <b-table
+            id="mainTable"
+            hover
+            :items="postDataTable"
+            :fields="mainTableFields"
+            @row-clicked="mainRowClicked(row)"
+          >
+            <template slot="actions" scope="postDataTable">
+              <b-btn size="sm" @click="console.log(postDataTable.item)">Details</b-btn>
+            </template>
+          </b-table>
         </div>
       </div>
+    </div>
+    </div>-->
+    <div>
+      <table class="mainTable">
+        <tr>
+          <th>Vote</th>
+          <th>Posted By</th>
+          <th>Time Posted</th>
+          <th>Title</th>
+        </tr>
+        <tr>
+          <!-- For loop to populate data -->
+        </tr>
+      </table>
     </div>
   </div>
 </template>
 
+
+
 <script>
+// Start imports for vue script
 import { frbase } from "../setupMyFirebase.js";
 import app from "../main.js";
 
+// Firebase
 var root = frbase.database().ref("Posts");
-
-// root.on("child_added", snapshot => {
-//   console.log(snapshot.val());
-//   app.createTable(snapshot);
-// });
 
 export default {
   name: "home",
@@ -131,17 +154,23 @@ export default {
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
       newSubGedditDescription: "",
-      mainTableFields:{
-
-      }
+      mainTableFields: {}
     };
   },
   components: {},
   methods: {
     addPost() {
       const newPost = root.push();
-      const data = { votes: 0, title: this.postTitle, user: frbase.auth.currentUser, content: this.postData };
+      const data = {
+        votes: 0,
+        title: this.postTitle,
+        user: frbase.auth.currentUser,
+        content: this.postData
+      };
       newPost.set(data);
+    },
+    removePost() {
+      root.child(post[".key"]).remove();
     },
     createSubGeddit() {
       let newSubGeddit = root.child(this.newSubGedditTitle);
@@ -164,13 +193,16 @@ export default {
           this.$router.replace("login");
         });
     },
-    switchtoAccount(){
+    switchtoAccount() {
       this.$router.replace("account");
     },
     createTable(snapshot) {
       const items = snapshot.val();
       this.postDataTable.push(items);
       console.log(this.postDataTable);
+    },
+    mainRowClicked(event) {
+      alert(event);
     }
   },
   // Created
@@ -201,6 +233,9 @@ export default {
 }
 .post a.router-link-exact-active {
   color: #42b983;
+}
+.mainTable {
+  margin-top: 30px;
 }
 #mainHeader {
   display: inline;

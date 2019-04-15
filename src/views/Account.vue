@@ -6,40 +6,44 @@
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
         <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
-        
-
         <b-navbar-nav>
-          <b-nav-item v-on:click = '$router.push("home")'>Home</b-nav-item>
-          <b-nav-item v-on:click = '$router.push("Account")'>Account</b-nav-item>
-          <b-nav-item v-on:click = 'logout'>Logout</b-nav-item>
-          
+          <b-nav-item v-on:click="$router.push("home")">Home</b-nav-item>
+          <b-nav-item v-on:click="$router.push("Account")">Account</b-nav-item>
+          <b-nav-item v-on:click="logout">Logout</b-nav-item>
         </b-navbar-nav>
       </b-navbar>
     </div>
-    <div id="Account-Body">
-        <div>
-      <table class="mainTable">
-        <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Age</th>
-          <th>Date Of Birth</th>
-        </tr>
-        <template v-for="post in postDataTable">
-          <tr v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
-            <td>{{ post.firstName }}</td>
-            <td>{{ post.lastName }}</td>
-            <td>{{ post.email }}</td>
-            <td>{{ post.phone }}</td>
-            <td>{{ post.age }}</td>
-            <td>{{ post.dob}}</td>
+
+    <!-- <div id="Account-Body">
+      <div>
+        <table class="mainTable">
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Age</th>
+            <th>Date Of Birth</th>
           </tr>
-        </template>
-      </table>
+          <template v-for="post in postDataTable">
+            <tr v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
+              <td>{{ post.firstName }}</td>
+              <td>{{ post.lastName }}</td>
+              <td>{{ post.email }}</td>
+              <td>{{ post.phone }}</td>
+              <td>{{ post.age }}</td>
+              <td>{{ post.dob}}</td>
+              <td>{{post.createdAt}}</td>
+            </tr>
+          </template>
+        </table>
+      </div>
+    </div> -->
+
+    <div>
+      <b-table hover :items="items"></b-table>
     </div>
-    </div>
+  
   </div>
 </template>
 
@@ -56,50 +60,13 @@ export default {
   data() {
     return {
       /*Needs to go in to a post thread component*/
-      route: "",
-      postTitle: "",
-      postData: "",
-      postDataTable: [],
-      postObj: {},
-      upvoted: false,
-      downvoted: false,
-      votes: 0,
-      currentUser: frbase.auth().currentUser.email,
-
-      /*Needs to go in to a create sub geddit component*/
-      newSubGedditTitle: "",
-      newSubGedditDescription: "",
-      mainTableFields: {}
+      items: [],
+      currentUser: frbase.auth().currentUser.email
     };
   },
   components: {},
   methods: {
-    addPost() {
-      const newPost = root.push();
-      const data = {
-        votes: this.votes,
-        title: this.postTitle,
-        user: frbase.auth().currentUser.email,
-        content: this.postData
-      };
-      newPost.set(data);
-    },
-    removePost(post) {
-      root.child("post").remove();
-    },
-    createSubGeddit() {
-      let newSubGeddit = root.child(this.newSubGedditTitle);
 
-      newSubGeddit.push().set({ Title: this.newSubGedditTitle });
-      newSubGeddit.push().set({ Description: this.newSubGedditDescription });
-    },
-    resetFields() {
-      (route = ""),
-        (postTitle = ""),
-        (postData = ""),
-        (newSubGedditTitle = ""),
-        (newSubGedditDescription = "");
-    },
     Home() {
       this.$router.replace("home");
     },
@@ -115,11 +82,11 @@ export default {
       this.$router.replace("account");
     },
     createTable(snapshot) {
-      // let items = snapshot.val();
-      // items.snapKey = snapshot.key;
-      // this.postDataTable.push(items);
+       let items = snapshot.val();
+       items.snapKey = snapshot.key;
+       this.postDataTable.push(items);
 
-    let curr = root.child().orderByChild("email").equalTo(this.currentUser).on("child_added",
+    let curr = root.child().orderByChild("email").equalTo(this.currentUser.email).on("child_added",
               snapshot => {
                 let items = snapshot.val()
                 items.snapKey = snapshot.key
@@ -197,7 +164,7 @@ export default {
   margin-top: 20px;
 }
 
-#Account-Body{
+#Account-Body {
   margin-top: 30px;
 }
 </style>

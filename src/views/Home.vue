@@ -2,13 +2,13 @@
   <div class="post">
     <!-- Nav bar -->
     <!-- ------- -->
-    <!-- <div>
+    <div>
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
         <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
         <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
 
-        <!--<b-navbar-nav>
+        <b-navbar-nav>
           <b-nav-item @click="Home">Home</b-nav-item>
           <b-nav-item @click="switchtoAccount">Account</b-nav-item>
 
@@ -17,11 +17,15 @@
             <b-dropdown-item href="#">Settings</b-dropdown-item>
             <b-dropdown-item @click="logout">Logout</b-dropdown-item>
           </b-nav-item-dropdown>-->
-        <!--</b-navbar-nav>
+        </b-navbar-nav>
       </b-navbar>
-    </div> -->
+    </div>
 
-    <NavBar></NavBar>
+
+
+    <!-- <NavBar></NavBar> -->
+
+
 
     <!-- Modal Add Post-->
     <!-- ------------- -->
@@ -30,13 +34,13 @@
       <b-modal id="modal-post" title="Post to SubGeddit" @ok="addPost" @show="resetFields">
         <div class="modal-body">
           <b-form>
-            <b-form-group
+            <!-- <b-form-group
               id="SubGeddit"
               label="Where do you want to post"
               label-for="subGeddit-input"
             >
               <b-form-input id="subGeddit-input" v-model="route"></b-form-input>
-            </b-form-group>
+            </b-form-group> -->
 
             <b-form-group id="Title" label="Title your post" label-for="subGeddit-title">
               <b-form-input id="subGeddit-title" v-model="postTitle"></b-form-input>
@@ -130,7 +134,7 @@
               >&darr;</button>
             </td>
             <td>{{ post.user }}</td>
-            <td></td>
+            <td>{{ moment(post.createdAt).fromNow() }}</td>
             <td>{{ post.title }}</td>
             <td>
               <b-button @click="removePost(post)">Delete</b-button>
@@ -164,6 +168,7 @@ export default {
       upvoted: false,
       downvoted: false,
       votes: 0,
+      createdAt: Date.now(),
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
@@ -171,9 +176,9 @@ export default {
       mainTableFields: {}
     };
   },
-  components: {
-    NavBar
-  },
+  // components: {
+  //   NavBar
+  // },
   methods: {
     addPost() {
       const newPost = root.push();
@@ -181,7 +186,8 @@ export default {
         votes: this.votes,
         title: this.postTitle,
         user: frbase.auth().currentUser.email,
-        content: this.postData
+        content: this.postData,
+        createdAt: createdAt
       };
       newPost.set(data);
     },

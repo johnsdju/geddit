@@ -4,7 +4,11 @@
         <p>Join the club!</p>
         <input type="text" placeholder="Username" v-model= "email"><br>
         <input type="password" placeholder="Password" v-model= "password"><br>
-        <b-button @click="signUp">Sign Up</b-button>
+        <input type="text" placeholder="First Name" v-model= "firstName"><br>
+        <input type="text" placeholder="Last Name" v-model= "lastName"><br>
+        <input type="text" placeholder="Phone Number" v-model= "phone"><br>
+        <input type="text" placeholder="Age" v-model= "age"><br>
+        <b-button @click="handler">Sign Up</b-button>
         <span>or go </span><router-link to="/">back</router-link>
     </div>
 </template>
@@ -13,13 +17,19 @@
 
 import {frbase} from "../setupMyFirebase.js"
 
+var root = frbase.database().ref("Private Data")
 
 export default {
   name: "signUp",
   data() {
     return {
       email: "",
-      password: ""
+      password: "",
+      firstName: "",
+      lastName: "",
+      phone: "",
+      age: "",
+      
     };
   },
   methods: {
@@ -35,6 +45,22 @@ export default {
             alert("Yikes.. " + err.message);
           }
         );
+    },
+    createTable(){
+      const newPrivate = root.push()
+      const privateData = {
+        email: this.email,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        phone: this.phone,
+        age: this.age
+      }
+      newPrivate.set(privateData)
+    },
+    handler(){
+      this.signUp()
+      this.createTable()
     }
   }
 };

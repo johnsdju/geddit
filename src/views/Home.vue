@@ -111,7 +111,7 @@
     </div>-->
     <div>
       <table class="mainTable">
-        <tr>
+        <tr class="headers">
           <th>Vote</th>
           <th>Posted By</th>
           <th>Time Posted</th>
@@ -119,7 +119,7 @@
         </tr>
         <!-- For loop to populate data -->
         <template v-for="post in postDataTable">
-          <tr v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
+          <tr v-model="post.votes" v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
             <td>
               <button @click="upvote(post.snapKey, post.votes)">&uarr;</button>
               {{ post.votes }}
@@ -160,6 +160,7 @@ export default {
       postObj: {},
       upvoted: false,
       downvoted: false,
+      votes: 0,
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
@@ -172,7 +173,7 @@ export default {
     addPost() {
       const newPost = root.push();
       const data = {
-        votes: 0,
+        votes: this.votes,
         title: this.postTitle,
         user: frbase.auth().currentUser.email,
         content: this.postData
@@ -189,18 +190,22 @@ export default {
       newSubGeddit.push().set({ Description: this.newSubGedditDescription });
     },
     upvote(key, num) {
-      num++;
+      num++; 
       root
         .child(key)
-        .child("votes")
+        .child('votes')
         .set(num);
+        this.upvoted = true;
+        this.downvoted = false;
     },
     downvote(key, num) {
       num--;
       root
         .child(key)
-        .child("votes")
+        .child('votes')
         .set(num);
+        this.upvoted = false;
+        this.downvoted = true;
     },
     resetFields() {
       (route = ""),
@@ -246,7 +251,12 @@ export default {
       this.createTable(snapshot);
     });
     root.on("child_changed", snapshot => {
-      this.createTable(snapshot);
+      let items = snapshot.val();
+      this.postDataTable.forEach(element =>{
+        if(element.snapKey == snapshot.key){
+          element.votes = items.votes;
+        }
+      });
     });
   }
 };
@@ -259,8 +269,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
   color: #2c3e50;
-}
-.post {
   padding: 30px;
 }
 .post a {
@@ -272,6 +280,11 @@ export default {
 }
 .mainTable {
   margin-top: 30px;
+  float: center;
+  margin-left: 500px;
+}
+.headers{
+  float: center;
 }
 #mainHeader {
   display: inline;

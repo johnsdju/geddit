@@ -27,12 +27,17 @@
           <th>Age</th>
           <th>Date Of Birth</th>
         </tr>
-        <template>
+        <template v-for="post in postDataTable">
           <tr v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
             <td>{{ post.firstName }}</td>
-            <td></td>
             <td>{{ post.lastName }}</td>
+            <td>{{ post.email }}</td>
+            <td>{{ post.phone }}</td>
+            <td>{{ post.age }}</td>
+            <td>{{ post.dob}}</td>
+            <button @click = "getCurrentUser">Test</button>
           </tr>
+          
         </template>
       </table>
     </div>
@@ -41,37 +46,47 @@
 </template>
 
 <script>
+// Start imports for vue script
 import { frbase } from "../setupMyFirebase.js";
 import app from "../main.js";
 
+// Firebase
 var root = frbase.database().ref("Private Data");
-
 
 export default {
   name: "home",
   data() {
     return {
-      
+      /*Needs to go in to a post thread component*/
       route: "",
       postTitle: "",
       postData: "",
       postDataTable: [],
       postObj: {},
+      upvoted: false,
+      downvoted: false,
+      votes: 0,
 
-      
+      /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
       newSubGedditDescription: "",
-      mainTableFields:{
-
-      }
+      mainTableFields: {}
     };
   },
   components: {},
   methods: {
     addPost() {
       const newPost = root.push();
-      const data = { votes: 0, title: this.postTitle, user: frbase.auth.ge, content: this.postData };
+      const data = {
+        votes: this.votes,
+        title: this.postTitle,
+        user: frbase.auth().currentUser.email,
+        content: this.postData
+      };
       newPost.set(data);
+    },
+    removePost(post) {
+      root.child("post").remove();
     },
     createSubGeddit() {
       let newSubGeddit = root.child(this.newSubGedditTitle);
@@ -79,12 +94,33 @@ export default {
       newSubGeddit.push().set({ Title: this.newSubGedditTitle });
       newSubGeddit.push().set({ Description: this.newSubGedditDescription });
     },
+    upvote(key, num) {
+      num++; 
+      root
+        .child(key)
+        .child('votes')
+        .set(num);
+        this.upvoted = true;
+        this.downvoted = false;
+    },
+    downvote(key, num) {
+      num--;
+      root
+        .child(key)
+        .child('votes')
+        .set(num);
+        this.upvoted = false;
+        this.downvoted = true;
+    },
     resetFields() {
       (route = ""),
         (postTitle = ""),
         (postData = ""),
         (newSubGedditTitle = ""),
         (newSubGedditDescription = "");
+    },
+    Home() {
+      this.$router.replace("home");
     },
     logout() {
       frbase
@@ -94,19 +130,40 @@ export default {
           this.$router.replace("login");
         });
     },
+    switchtoAccount() {
+      this.$router.replace("account");
+    },
     createTable(snapshot) {
-      const items = snapshot.val();
+      let items = snapshot.val();
+      items.snapKey = snapshot.key;
       this.postDataTable.push(items);
-      console.log(this.postDataTable);
-    }
+      console.log(
+        "This is a the added item: " +
+          items.firstName +
+          items.lastName +
+          items.age +
+          items.dob +
+          items.email +
+          items.phone +
+          items.password
+      );
+    },
+    mainRowClicked(event) {
+      alert(event);
+    },
+    postDetails(key) {}
   },
   // Created
   created: function() {
     root.on("child_added", snapshot => {
-      console.log(snapshot.val());
+      console.log("the added obj: " + snapshot.val());
       this.createTable(snapshot);
     });
-    //this.$refs.loadingAni = false;
+    root.on("child_changed", snapshot => {
+      this.createTable(snapshot);
+    });
+  }, getCurrentUser(){
+    alert(frbase.auth().currentUser.email)
   }
 };
 </script>

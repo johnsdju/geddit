@@ -6,22 +6,36 @@
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
         <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
-        <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
+        
 
         <b-navbar-nav>
           <b-nav-item v-on:click = '$router.push("home")'>Home</b-nav-item>
           <b-nav-item v-on:click = '$router.push("Account")'>Account</b-nav-item>
           <b-nav-item v-on:click = 'logout'>Logout</b-nav-item>
-          <!-- <b-nav-item-dropdown text="User" right>
-            <b-dropdown-item href="#">Account</b-dropdown-item>
-            <b-dropdown-item href="#">Settings</b-dropdown-item>
-            <b-dropdown-item @click="logout">Logout</b-dropdown-item>
-          </b-nav-item-dropdown> -->
+          
         </b-navbar-nav>
       </b-navbar>
     </div>
     <div id="Account-Body">
-      <p></p>
+        <div>
+      <table class="mainTable">
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Age</th>
+          <th>Date Of Birth</th>
+        </tr>
+        <template>
+          <tr v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
+            <td>{{ post.firstName }}</td>
+            <td></td>
+            <td>{{ post.lastName }}</td>
+          </tr>
+        </template>
+      </table>
+    </div>
     </div>
   </div>
 </template>
@@ -30,25 +44,21 @@
 import { frbase } from "../setupMyFirebase.js";
 import app from "../main.js";
 
-var root = frbase.database().ref("Posts");
+var root = frbase.database().ref("Private Data");
 
-// root.on("child_added", snapshot => {
-//   console.log(snapshot.val());
-//   app.createTable(snapshot);
-// });
 
 export default {
   name: "home",
   data() {
     return {
-      /*Needs to go in to a post thread component*/
+      
       route: "",
       postTitle: "",
       postData: "",
       postDataTable: [],
       postObj: {},
 
-      /*Needs to go in to a create sub geddit component*/
+      
       newSubGedditTitle: "",
       newSubGedditDescription: "",
       mainTableFields:{

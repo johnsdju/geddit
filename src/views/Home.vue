@@ -9,14 +9,8 @@
         <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
 
         <b-navbar-nav>
-          <b-nav-item v-on:click = '$router.push("home")'>Home</b-nav-item>
-          <b-nav-item v-on:click = '$router.push("Account")'>Account</b-nav-item>
-          <b-nav-item-dropdown text="SubGeddits" right>
-            <b-dropdown-item href="#">EN</b-dropdown-item>
-            <b-dropdown-item href="#">ES</b-dropdown-item>
-            <b-dropdown-item href="#">RU</b-dropdown-item>
-            <b-dropdown-item href="#">FA</b-dropdown-item>
-          </b-nav-item-dropdown>
+          <b-nav-item @click="Home">Home</b-nav-item>
+          <b-nav-item @click="switchtoAccount">Account</b-nav-item>
 
           <!-- <b-nav-item-dropdown text="User" right>
             <b-dropdown-item @click="switchtoAccount">Account</b-dropdown-item>
@@ -123,15 +117,28 @@
           <th>Time Posted</th>
           <th>Title</th>
         </tr>
-        <tr>
-          <!-- For loop to populate data -->
-        </tr>
+        <!-- For loop to populate data -->
+        <template v-for="post in postDataTable">
+          <tr v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
+            <td>
+              <button @click="upvote(post.snapKey, post.votes)">&uarr;</button>
+              {{ post.votes }}
+              <button
+                @click="downvote(post.snapKey, post.votes)"
+              >&darr;</button>
+            </td>
+            <td>{{ post.user }}</td>
+            <td></td>
+            <td>{{ post.title }}</td>
+            <td>
+              <b-button @click="removePost(post)">Delete</b-button>
+            </td>
+          </tr>
+        </template>
       </table>
     </div>
   </div>
 </template>
-
-
 
 <script>
 // Start imports for vue script
@@ -151,6 +158,8 @@ export default {
       postData: "",
       postDataTable: [],
       postObj: {},
+      upvoted: false,
+      downvoted: false,
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
@@ -165,13 +174,13 @@ export default {
       const data = {
         votes: 0,
         title: this.postTitle,
-        user: this.currentUser,
+        user: frbase.auth().currentUser.email,
         content: this.postData
       };
       newPost.set(data);
     },
-    removePost() {
-      root.child(post[".key"]).remove();
+    removePost(post) {
+      root.child("post").remove();
     },
     createSubGeddit() {
       let newSubGeddit = root.child(this.newSubGedditTitle);
@@ -179,12 +188,29 @@ export default {
       newSubGeddit.push().set({ Title: this.newSubGedditTitle });
       newSubGeddit.push().set({ Description: this.newSubGedditDescription });
     },
+    upvote(key, num) {
+      num++;
+      root
+        .child(key)
+        .child("votes")
+        .set(num);
+    },
+    downvote(key, num) {
+      num--;
+      root
+        .child(key)
+        .child("votes")
+        .set(num);
+    },
     resetFields() {
       (route = ""),
         (postTitle = ""),
         (postData = ""),
         (newSubGedditTitle = ""),
         (newSubGedditDescription = "");
+    },
+    Home() {
+      this.$router.replace("home");
     },
     logout() {
       frbase
@@ -198,21 +224,30 @@ export default {
       this.$router.replace("account");
     },
     createTable(snapshot) {
-      const items = snapshot.val();
+      let items = snapshot.val();
+      items.snapKey = snapshot.key;
       this.postDataTable.push(items);
-      console.log(this.postDataTable);
+      console.log(
+        "This is a the added item: " +
+          items.title +
+          items.snapKey +
+          items.content
+      );
     },
     mainRowClicked(event) {
       alert(event);
-    }
+    },
+    postDetails(key) {}
   },
   // Created
   created: function() {
     root.on("child_added", snapshot => {
-      console.log(snapshot.val());
+      console.log("the added obj: " + snapshot.val());
       this.createTable(snapshot);
     });
-    //this.$refs.loadingAni = false;
+    root.on("child_changed", snapshot => {
+      this.createTable(snapshot);
+    });
   }
 };
 </script>

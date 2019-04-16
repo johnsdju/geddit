@@ -24,9 +24,6 @@
 
 
     <!-- <NavBar></NavBar> -->
-
-
-
     <!-- Modal Add Post-->
     <!-- ------------- -->
     <div>
@@ -34,14 +31,6 @@
       <b-modal id="modal-post" title="Post to SubGeddit" @ok="addPost" @show="resetFields">
         <div class="modal-body">
           <b-form>
-            <!-- <b-form-group
-              id="SubGeddit"
-              label="Where do you want to post"
-              label-for="subGeddit-input"
-            >
-              <b-form-input id="subGeddit-input" v-model="route"></b-form-input>
-            </b-form-group> -->
-
             <b-form-group id="Title" label="Title your post" label-for="subGeddit-title">
               <b-form-input id="subGeddit-title" v-model="postTitle"></b-form-input>
             </b-form-group>
@@ -97,48 +86,28 @@
 
     <!-- Start Posts -->
     <!-- ----------- -->
-    <!-- <div id="showPosts">
-      <div class="text-center">
-        <div>
-          <b-table
-            id="mainTable"
-            hover
-            :items="postDataTable"
-            :fields="mainTableFields"
-            @row-clicked="mainRowClicked(row)"
-          >
-            <template slot="actions" scope="postDataTable">
-              <b-btn size="sm" @click="console.log(postDataTable.item)">Details</b-btn>
-            </template>
-          </b-table>
-        </div>
-      </div>
-    </div>
-    </div>-->
     <div>
       <table class="mainTable">
         <tr class="headers">
           <th>Vote</th>
+          <th>Title</th>
           <th>Posted By</th>
           <th>Time Posted</th>
-          <th>Title</th>
         </tr>
         <!-- For loop to populate data -->
         <template v-for="post in postDataTable">
-          <tr v-model="post.votes" v-bind:ref="post.snapKey" @click="postDetails(post.snapKey)">
+          <tr v-model="post.votes" v-bind:ref="post.snapKey">
             <td>
-              <button @click="upvote(post.snapKey, post.votes)">&uarr;</button>
+              <b-button size="sm" variant="outline-info" @click="upvote(post.snapKey, post.votes)">▲</b-button>
               {{ post.votes }}
-              <button
+              <b-button size="sm" variant="outline-info"
                 @click="downvote(post.snapKey, post.votes)"
-              >&darr;</button>
+              >▼</b-button>
             </td>
-            <td>{{ post.user }}</td>
-            <td>{{ moment(post.createdAt).fromNow() }}</td>
-            <td>{{ post.title }}</td>
-            <td>
-              <b-button @click="removePost(post)">Delete</b-button>
-            </td>
+            <td id="title" @click="postDetails(post.snapKey)">{{ post.title }}</td>
+            <td id="user">{{ post.user }}</td>
+            <td id="moment"> {{ post.createdAt | moment("from", "now") }}</td>
+              
           </tr>
         </template>
       </table>
@@ -150,7 +119,6 @@
 // Start imports for vue script
 import { frbase } from "../setupMyFirebase.js";
 import app from "../main.js";
-import moment from 'moment';
 
 // Firebase
 var root = frbase.database().ref("Posts");
@@ -168,7 +136,6 @@ export default {
       upvoted: false,
       downvoted: false,
       votes: 0,
-      createdAt: Date.now(),
 
       /*Needs to go in to a create sub geddit component*/
       newSubGedditTitle: "",
@@ -176,9 +143,6 @@ export default {
       mainTableFields: {}
     };
   },
-  // components: {
-  //   NavBar
-  // },
   methods: {
     addPost() {
       const newPost = root.push();
@@ -187,12 +151,9 @@ export default {
         title: this.postTitle,
         user: frbase.auth().currentUser.email,
         content: this.postData,
-        createdAt: createdAt
+        createdAt: Date.now()
       };
       newPost.set(data);
-    },
-    removePost(post) {
-      root.child("post").remove();
     },
     moment() {
       return moment();
@@ -250,22 +211,23 @@ export default {
       let items = snapshot.val();
       items.snapKey = snapshot.key;
       this.postDataTable.push(items);
-      console.log(
-        "This is a the added item: " +
-          items.title +
-          items.snapKey +
-          items.content
-      );
+  
     },
     mainRowClicked(event) {
       alert(event);
     },
-    postDetails(key) {}
+    postDetails(userkey) {
+      this.$router.push({
+        name: "Post",
+        params: {
+          ukey:userkey
+        }
+      })
+    }
   },
   // Created
   created: function() {
     root.on("child_added", snapshot => {
-      console.log("the added obj: " + snapshot.val());
       this.createTable(snapshot);
     });
     root.on("child_changed", snapshot => {
@@ -287,54 +249,70 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: left;
   color: #2c3e50;
-  padding: 30px;
+  padding: 0px;
+  width: 100%;
+  min-height: 100vh;
+  background: #c850c0;
+  background: -webkit-linear-gradient(45deg, #4158d0, #c850c0);
+  background: -o-linear-gradient(45deg, #4158d0, #c850c0);
+  background: -moz-linear-gradient(45deg, #4158d0, #c850c0);
+  background: linear-gradient(45deg, #4158d0, #c850c0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 .post a {
   font-weight: bold;
   color: #2c3e50;
 }
+
 .post a.router-link-exact-active {
   color: #42b983;
 }
+
+b-button{
+  margin-left: 10px;
+}
+
 .mainTable {
-  margin-top: 30px;
-  float: center;
-  margin-left: 500px;
+  border-spacing: 1;
+  border-radius: 10px transparent;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
 }
+
+th{
+  font-size: 18px;
+  background-color: #2c3e50;
+  color: #999d9f;
+  line-height: 1.2;
+  font-weight: unset;
+  padding-left: 30px;
+  padding-right:20px;
+}
+
+tr:nth-child(even) {
+  background-color: #f5f5f5;
+}
+
+tr:nth-child(odd){
+  font-size: 15px;
+  background-color: #ebe7e7;
+  line-height: 1.2;
+  font-weight: unset;
+}
+td{
+  padding-left: 20px;
+}
+tr:hover {
+  color: #555555;
+  background-color: #c0c0c0;
+}
+
 .headers{
-  float: center;
-}
-#mainHeader {
-  display: inline;
-}
-
-#post-image {
-  padding-bottom: 10px;
-}
-
-#post-form {
-  float: left;
-}
-
-#createSubGeddit-form {
-  float: left;
-}
-
-#logo {
-  margin-right: 20px;
-}
-
-#postButton {
-  margin-right: 20px;
-}
-
-#loadingAni {
-  margin-top: 200px;
-  width: 3rem;
-  height: 3rem;
-}
-
-#mainTable {
-  margin-top: 20px;
+  height: 60px;
+  background: rgb(52,58,64);
 }
 </style>

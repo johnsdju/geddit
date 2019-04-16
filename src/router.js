@@ -4,6 +4,7 @@ import Home from './views/Home.vue'
 import Login from './views/Login.vue'
 import Signup from './views/Signup.vue'
 import Account from './views/Account.vue'
+import Post from './views/Post.vue'
 import {frbase} from "./setupMyFirebase.js"
 
 Vue.use(Router)
@@ -38,6 +39,15 @@ const router = new Router({
       path: '/account',
       name: 'Account',
       component: Account,
+      meta: {
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/post/:ukey/',
+      name: 'Post',
+      component: Post,
+      props: true,
       meta: {
         requiresAuth: true
       }

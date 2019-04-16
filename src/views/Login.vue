@@ -43,6 +43,7 @@ export default {
 
   .login {
       margin-top: 40px;
+      padding: 30px;
   }
   input {
       margin: 10px 0;
@@ -63,5 +64,4 @@ export default {
       cursor: pointer;
   }
 
-  
 </style>

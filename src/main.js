@@ -7,6 +7,7 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import {frbase} from "./setupMyFirebase.js"
+import moment from 'moment';
 
 Vue.config.productionTip = false
 
@@ -22,3 +23,5 @@ frbase.auth().onAuthStateChanged(() => {
 })
 
 Vue.use(BootstrapVue)
+
+Vue.use(require('vue-moment'));

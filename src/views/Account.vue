@@ -5,17 +5,15 @@
     <div>
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
-        <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
         <b-navbar-nav>
           <b-nav-item @click="Home">Home</b-nav-item>
-          <b-nav-item @click="switchtoAccount">Account</b-nav-item>
           <b-nav-item v-on:click="logout">Logout</b-nav-item>
         </b-navbar-nav>
       </b-navbar>
     </div>
 
     <!-- Show User Private Data -->
-    <div>
+    <div id="accountTable">
       <b-table hover :items="items" dark></b-table>
     </div>
   </div>
@@ -86,6 +84,11 @@ tr{
   font-weight: bold;
   color: #2c3e50;
 }
+
+#accountTable{
+  margin-top: 20%;
+}
+
 body{
   background-color: #454d55;
   margin: 0px;

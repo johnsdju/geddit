@@ -10,7 +10,6 @@
 </template>
 
 <script>
-
 import {frbase} from "../setupMyFirebase.js"
 
 export default {

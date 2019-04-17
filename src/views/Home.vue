@@ -6,22 +6,12 @@
       <b-navbar class="navBar" type="dark" variant="dark" fixed="top">
         <img id="logo" alt="oh no.." src="./assets/logoG.png" width="25" height="25">
         <b-button id="postButton" v-b-modal.modal-post>Add Post</b-button>
-        <!-- <b-button id="createButton" v-b-modal.modal-create>Create SubGeddit</b-button> -->
-
         <b-navbar-nav>
           <b-nav-item @click="Home">Home</b-nav-item>
           <b-nav-item @click="switchtoAccount">Account</b-nav-item>
-
-          <!-- <b-nav-item-dropdown text="User" right>
-            <b-dropdown-item @click="switchtoAccount">Account</b-dropdown-item>
-            <b-dropdown-item href="#">Settings</b-dropdown-item>
-            <b-dropdown-item @click="logout">Logout</b-dropdown-item>
-          </b-nav-item-dropdown>-->
         </b-navbar-nav>
       </b-navbar>
     </div>
-
-
 
     <!-- <NavBar></NavBar> -->
     <!-- Modal Add Post-->
@@ -38,46 +28,8 @@
             <b-form-group
               id="Content"
               label="What do you want to post"
-              label-for="subGeddit-content"
-            >
+              label-for="subGeddit-content">
               <b-form-textarea id="subGeddit-content" v-model="postData" rows="3" max-rows="6"></b-form-textarea>
-            </b-form-group>
-          </b-form>
-        </div>
-      </b-modal>
-    </div>
-
-    <!--Modal Create SubGeddit-->
-    <!-- -------------------- -->
-    <div>
-      <!-- Modal Component -->
-      <b-modal
-        id="modal-create"
-        title="Create a SubGeddit"
-        @ok="createSubGeddit"
-        @show="resetFields"
-      >
-        <div class="modal-body">
-          <b-form>
-            <b-form-group
-              id="SubGeddit-name"
-              label="Name your SubGeddit"
-              label-for="subGeddit-name-input"
-            >
-              <b-form-input id="subGeddit-name-input" v-model="newSubGedditTitle"></b-form-input>
-            </b-form-group>
-
-            <b-form-group
-              id="SubGeddit-Des"
-              label="Tell us about your new SubGeddit"
-              label-for="subGeddit-des-input"
-            >
-              <b-form-textarea
-                id="subGeddit-des-input"
-                v-model="newSubGedditDescription"
-                rows="2"
-                max-rows="2"
-              ></b-form-textarea>
             </b-form-group>
           </b-form>
         </div>
@@ -98,16 +50,15 @@
         <template v-for="post in postDataTable">
           <tr v-model="post.votes" v-bind:ref="post.snapKey">
             <td>
-              <b-button size="sm" variant="outline-info" @click="upvote(post.snapKey, post.votes)">▲</b-button>
-              {{ post.votes }}
-              <b-button size="sm" variant="outline-info"
+              <b-button size="sm" id="upvote" variant="outline-info" @click="upvote(post.snapKey, post.votes)">▲</b-button>
+              <p id="upVotesID"><b-button size="sm" disabled variant="info">{{ post.votes }}</b-button></p>
+              <b-button size="sm" id="downvote" variant="outline-info"
                 @click="downvote(post.snapKey, post.votes)"
               >▼</b-button>
             </td>
             <td id="title" @click="postDetails(post.snapKey)">{{ post.title }}</td>
             <td id="user">{{ post.user }}</td>
-            <td id="moment"> {{ post.createdAt | moment("from", "now") }}</td>
-              
+            <td id="moment"> {{ post.createdAt | moment("from", "now") }}</td> 
           </tr>
         </template>
       </table>
@@ -127,7 +78,6 @@ export default {
   name: "home",
   data() {
     return {
-      /*Needs to go in to a post thread component*/
       route: "",
       postTitle: "",
       postData: "",
@@ -136,11 +86,6 @@ export default {
       upvoted: false,
       downvoted: false,
       votes: 0,
-
-      /*Needs to go in to a create sub geddit component*/
-      newSubGedditTitle: "",
-      newSubGedditDescription: "",
-      mainTableFields: {}
     };
   },
   methods: {
@@ -157,12 +102,6 @@ export default {
     },
     moment() {
       return moment();
-    },
-    createSubGeddit() {
-      let newSubGeddit = root.child(this.newSubGedditTitle);
-
-      newSubGeddit.push().set({ Title: this.newSubGedditTitle });
-      newSubGeddit.push().set({ Description: this.newSubGedditDescription });
     },
     upvote(key, num) {
       if(this.upvoted === false){
@@ -189,9 +128,7 @@ export default {
     resetFields() {
       (route = ""),
         (postTitle = ""),
-        (postData = ""),
-        (newSubGedditTitle = ""),
-        (newSubGedditDescription = "");
+        (postData = "");
     },
     Home() {
       this.$router.replace("home");
@@ -258,7 +195,7 @@ export default {
   background: -moz-linear-gradient(45deg, #4158d0, #c850c0);
   background: linear-gradient(45deg, #4158d0, #c850c0);
   display: flex;
-  align-items: center;
+  /* align-items: center; */
   justify-content: center;
   flex-wrap: wrap;
 }
@@ -270,6 +207,35 @@ export default {
 .post a.router-link-exact-active {
   color: #42b983;
 }
+#upvote{
+  margin-bottom: 5px;
+  text-align: center;
+  margin-left: 7px;
+}
+#upvoteID{
+  /* padding: 10%; */
+ text-align: center;
+  margin-left: 7px;
+}
+#downvote{
+  margin-top: -10px;
+  margin-left: 7px;
+  text-align: center;
+}
+#title:hover{
+  color: blue;
+  cursor: pointer;
+}
+
+#upVotesID{
+  font-weight: bold;
+  font-size: 18px;
+  padding-left: 10px;
+  
+}
+#moment{
+  width: 15%;
+}
 
 b-button{
   margin-left: 10px;
@@ -279,8 +245,15 @@ b-button{
   border-spacing: 1;
   border-radius: 10px transparent;
   overflow: hidden;
-  width: 100%;
-  position: relative;
+  /* width: 100%; */
+  padding-top: 500px;
+  margin-top: 20%;
+  margin-bottom: 20%;
+  /* margin-left: 50%; */
+}
+
+table{
+  width: 1000px;
 }
 
 th{
@@ -305,6 +278,10 @@ tr:nth-child(odd){
 }
 td{
   padding-left: 20px;
+  padding-right: 20px;
+  height: 30px; 
+   padding-top: 10px;
+  padding-bottom: 10px;
 }
 tr:hover {
   color: #555555;
@@ -315,4 +292,6 @@ tr:hover {
   height: 60px;
   background: rgb(52,58,64);
 }
+
+
 </style>
